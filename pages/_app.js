@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { magic } from "../lib/magic-client";
 import "../styles/globals.css";
@@ -9,19 +9,18 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+ 
   useEffect(() => {
+    if (sessionStorage.getItem("alreadyRedirected")) return;
+    sessionStorage.setItem("alreadyRedirected", "true");
+
     const handleLoggedIn = async () => {
-      const isLoggedIn = await magic.user.isLoggedIn();
-      if (isLoggedIn) {
-        // route to /
-        router.push("/");
-      } else {
-        // route to /login
-        router.push("/login");
-      }
+        const isLoggedIn = await magic.user.isLoggedIn();
+        router.push(isLoggedIn ? "/" : "/login");
     };
+
     handleLoggedIn();
-  });
+}, [router]);
 
   useEffect(() => {
     const handleComplete = () => {
@@ -36,7 +35,7 @@ function MyApp({ Component, pageProps }) {
     };
   }, [router]);
 
-  return isLoading ? <Loading/> : <Component {...pageProps} />;
+  return isLoading ? <Loading /> : <Component {...pageProps} />;
 
 }
 

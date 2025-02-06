@@ -15,9 +15,9 @@ export async function middleware(req,) {
     return NextResponse.next();
   }
 
-  if ((!token || !userId) && pathname !== "/login") {
+  if ((!token || !userId) && !pathname.startsWith("/login")) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 }

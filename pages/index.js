@@ -52,8 +52,7 @@ export default function Home({
   popularVideos,
   watchItAgainVideos, }) {
 
-  console.log({ disneyVideos });
-
+    
   return (
     <>
       <div className={styles.container}>
