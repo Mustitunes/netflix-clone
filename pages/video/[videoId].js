@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import styles from "../../styles/Video.module.css"
 import clsx from "classnames";
 import { getYoutubeVideoById } from "../../lib/videos";
-import NavBar from "../../components/nav/navbar";
+import NavBar from "../../components/nav/Navbar";
 import Like from "../../components/icons/like-icon";
 import DisLike from "../../components/icons/dislike-icon";
 
