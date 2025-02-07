@@ -3,43 +3,51 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useEffect, useState } from 'react';
 import Image from "next/image";
-import { magic } from "../../lib/magic-client";
 
-
+// Entferne den direkten Import von `magic`
+// import { magic } from "../../lib/magic-client";
 
 const Navbar = () => {
-
-    const router = useRouter()
-
+    const router = useRouter();
     const [showDropDown, setShowDropDown] = useState(false);
     const [username, setUsername] = useState('');
     const [didToken, setDidToken] = useState('');
+    const [magicInstance, setMagicInstance] = useState(null); // Neuer State für `magic`
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            import("../../lib/magic-client").then(({ magic }) => {
+                setMagicInstance(magic);
+            });
+        }
+    }, []);
 
     useEffect(() => {
         async function getUsername() {
+            if (!magicInstance) return; // Warten, bis `magic` geladen ist
+            
             try {
-                const { email } = await magic.user.getMetadata();
-                const didToken = await magic.user.getIdToken();
+                const { email } = await magicInstance.user.getMetadata();
+                const didToken = await magicInstance.user.getIdToken();
                 if (email) {
                     setUsername(email);
                     setDidToken(didToken);
                 }
-            } catch {
-                console.error("Error retrieving email");
+            } catch (error) {
+                console.error("Error retrieving email:", error);
             }
         }
         getUsername();
-    })
-
+    }, [magicInstance]); // Hier `magicInstance` als Dependency hinzufügen
 
     const handleOnClickHome = (e) => {
-        e.preventDefault()
-        router.push('/')
+        e.preventDefault();
+        router.push('/');
     }
 
     const handleOnClickMyList = (e) => {
-        e.preventDefault()
-        router.push('/browse/my-list')
+        e.preventDefault();
+        router.push('/browse/my-list');
     }
 
     const handleShowDropDown = (e) => {
@@ -58,22 +66,18 @@ const Navbar = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
-            // Überprüfen, ob die Antwort JSON ist
+
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new Error('Server returned non-JSON response');
             }
-    
-            // Antwort als JSON parsen
+
             const res = await response.json();
-    
+
             if (!response.ok) {
-                // Fehlerbehandlung für Server-Fehler (z.B. 400, 500)
                 throw new Error(res.message || 'Logout failed');
             }
-    
-            // Erfolgsfall
+
             router.push('/login');
         } catch (error) {
             console.error('Error logging out:', error.message);
@@ -82,13 +86,10 @@ const Navbar = () => {
     };
 
     return (
-
         <div className={styles.container}>
-
             <div className={styles.wrapper}>
                 <Link href='/' legacyBehavior>
                     <a className={styles.logoLink}>
-
                         <div className={styles.logoWrapper}>
                             <Image
                                 src={'/static/netflix.svg'}
@@ -104,12 +105,10 @@ const Navbar = () => {
                     <li className={styles.navItem2} onClick={handleOnClickMyList} >My List</li>
                 </ul>
 
-
                 <nav className={styles.navContainer}>
                     <div>
                         <button className={styles.usernameBtn} onClick={handleShowDropDown}>
                             <p className={styles.username}>{username}</p>
-                            {/*expand user name*/}
                             <Image
                                 src={'/static/expand_more.svg'}
                                 alt='Expand dropdown'
@@ -128,15 +127,9 @@ const Navbar = () => {
                             )}
                     </div>
                 </nav>
-
             </div>
-
         </div>
-
-
-
-
-    )
+    );
 }
 
 export default Navbar;
