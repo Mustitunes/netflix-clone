@@ -2,7 +2,7 @@ import Head from "next/head";
 import Banner from "../components/banner/banner";
 import Navbar from "../components/nav/NavBar";
 import SectionCards from "../components/card/section-card"
-import styles from "../styles/Home.module.css";
+import styles from "../styles/home.module.css";
 import {
   getPopularVideos,
   getVideos,
