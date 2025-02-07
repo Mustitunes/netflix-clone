@@ -1,5 +1,5 @@
 import Head from "next/head";
-import NavBar from "../../components/nav/Navbar";
+import NavBar from "../../components/nav/NavBar";
 import SectionCards from "../../components/card/section-card";
 import styles from "../../styles/MyList.module.css";
 import { redirectUser } from "../../utils/redirectUser";
